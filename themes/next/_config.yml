@@ -43,9 +43,10 @@ keywords: "Hexo, NexT"
 rss:
 
 footer:
+  # 底部 settings
   # Specify the date when the site was setup.
   # If not defined, current year will be used.
-  #since: 2015
+  since: 2015
 
   # Icon between year and copyright info.
   icon: user
@@ -54,13 +55,13 @@ footer:
   copyright:
   # -------------------------------------------------------------
   # Hexo link (Powered by Hexo).
-  powered: true
+  powered: false
 
   theme:
     # Theme & scheme info link (Theme - NexT.scheme).
-    enable: true
+    enable: false
     # Version info of NexT after scheme info (vX.X.X).
-    version: true
+    version: false
   # -------------------------------------------------------------
   # Any custom text can be defined here.
   #custom_text: Hosted by <a target="_blank" href="https://pages.github.com">GitHub Pages</a>
@@ -118,7 +119,7 @@ scheme: Mist
 
 
 # ---------------------------------------------------------------
-# Sidebar Settings
+# 侧边栏 Sidebar Settings
 # ---------------------------------------------------------------
 
 # Social Links.
@@ -126,8 +127,9 @@ scheme: Mist
 # Key is the link label showing to end users.
 # Value before `||` delimeter is the target permalink.
 # Value after `||` delimeter is the name of FontAwesome icon. If icon (with or without delimeter) is not specified, globe icon will be loaded.
-#social:
-  #GitHub: https://github.com/yourname || github
+social:
+  GitHub: https://github.com/Alvabill
+  简书: https://www.jianshu.com/p/1f8107a8778c 
   #E-Mail: mailto:yourname@gmail.com || envelope
   #Google: https://plus.google.com/yourname || google
   #Twitter: https://twitter.com/yourname || twitter
@@ -142,14 +144,22 @@ social_icons:
   enable: true
   icons_only: false
   transition: false
+  GitHub: github
+  简书: book
+  
 
-# Blog rolls
+# 博客外链 Blog rolls
 links_icon: link
-links_title: Links
-links_layout: block
-#links_layout: inline
-#links:
-  #Title: http://example.com/
+links_title: 友情链接
+# links_layout: block
+links_layout: inline
+links:
+  Web前端导航: http://www.alloyteam.com/nav/
+  创造狮导航: http://www.chuangzaoshi.com/code
+  前端书籍资料: http://www.36zhen.com/t?id=3448
+  掘金: https://juejin.im/timeline
+  V2EX: https://www.v2ex.com/
+  菜鸟教程: http://www.runoob.com/
 
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.gif
@@ -242,10 +252,10 @@ post_wordcount:
   #description: ex. subscribe to my blog by scanning my public wechat account
 
 # Reward
-#reward_comment: Donate comment here
+# reward_comment: 坚持原创技术分享，您的支持将鼓励我继续创作！ 打赏
 #wechatpay: /images/wechatpay.jpg
 #alipay: /images/alipay.jpg
-#bitcoin: /images/bitcoin.png
+# bitcoin: /images/bitcoin.png
 
 # Declare license on posts
 post_copyright:
@@ -675,7 +685,7 @@ motion:
 fancybox: true
 
 # Progress bar in the top during page loading.
-pace: false
+pace: true
 # Themes list:
 #pace-theme-big-counter
 #pace-theme-bounce
@@ -695,7 +705,7 @@ pace: false
 pace_theme: pace-theme-minimal
 
 # Canvas-nest
-canvas_nest: false
+canvas_nest: true
 
 # three_waves
 three_waves: false
@@ -717,7 +727,7 @@ canvas_ribbon:
   alpha: 0.6
   zIndex: -1
 
-# Script Vendors.
+# Script Vendors. 第三方JS库
 # Set a CDN address for the vendor you want to customize.
 # For example
 #    jquery: https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
