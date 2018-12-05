@@ -3,9 +3,8 @@ title: Hexo搭建个人博客--Next主题优化
 date: 2018-12-05 09:21:33
 tags: Hexo
 categories: 博客平台
-password: 1
+password: 
 ---
-
 ## 站点配置文件
 
 ### 基本使用
@@ -28,6 +27,6 @@ timezone: Asia/Shanghai
 "language": 语言会对应的解析正在应用的主题中的languages文件夹下的不同语言文件。所以这里的名称要和languages文件夹下的语言文件名称一致。
 "timezone": 可不填写。
 
-More info: [Next Setting](https://http://theme-next.iissnan.com)
-
 ## 主题配置文件
+
+More info: [Next Setting](https://http://theme-next.iissnan.com)
