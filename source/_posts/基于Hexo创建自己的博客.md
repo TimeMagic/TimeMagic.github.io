@@ -2,6 +2,7 @@
 title: 基于Hexo创建自己的github.io博客
 date: 2018-12-04 09:28:59
 tags: Hexo
+categories: 博客平台
 ---
 
 ## 快速搭建
@@ -134,3 +135,11 @@ $ hexo clean
 $ hexo generate
 $ hexo deploy
 ```
+
+## 新建一篇文章
+
+``` bash
+$ hexo new [layout] <title>
+```
+
+Hexo 有三种默认布局：post、page 和 draft，它们分别对应不同的路径，而您自定义的其他布局和 post 相同，都将储存到 source/_posts 文件夹。
