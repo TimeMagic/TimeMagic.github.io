@@ -3,6 +3,7 @@ title: Hexo搭建个人博客--Next主题优化
 date: 2018-12-05 09:21:33
 tags: Hexo
 categories: 博客平台
+password: 1
 ---
 
 ## 站点配置文件

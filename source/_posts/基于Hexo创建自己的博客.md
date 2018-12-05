@@ -3,6 +3,7 @@ title: 基于Hexo创建自己的github.io博客
 date: 2018-12-04 09:28:59
 tags: Hexo
 categories: 博客平台
+password: 1
 ---
 
 ## 快速搭建
