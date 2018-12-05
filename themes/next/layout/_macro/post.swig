@@ -353,12 +353,6 @@
     {% endif %}
 
     <footer class="post-footer">
-      <div>
-        {% if not is_index %}
-          {% include 'passage-end-tag.swig' %}
-        {% endif %}
-      </div>
-
       {% if post.tags and post.tags.length and not is_index %}
         <div class="post-tags">
           {% for tag in post.tags %}
@@ -366,6 +360,12 @@
           {% endfor %}
         </div>
       {% endif %}
+
+      <div>
+        {% if not is_index %}
+          {% include 'passage-end-tag.swig' %}
+        {% endif %}
+      </div>
 
       {% if not is_index %}
       {% if theme.rating.enable or (theme.vkontakte_api.enable and theme.vkontakte_api.like) or (theme.facebook_sdk.enable and theme.facebook_sdk.like_button) or (theme.needmoreshare2.enable and theme.needmoreshare2.postbottom.enable) %}
