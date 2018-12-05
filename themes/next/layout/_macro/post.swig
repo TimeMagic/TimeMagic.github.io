@@ -353,6 +353,12 @@
     {% endif %}
 
     <footer class="post-footer">
+      <div>
+        {% if not is_index %}
+          {% include 'passage-end-tag.swig' %}
+        {% endif %}
+      </div>
+
       {% if post.tags and post.tags.length and not is_index %}
         <div class="post-tags">
           {% for tag in post.tags %}
@@ -432,11 +438,6 @@
   {### END POST BLOCK ###}
   {######################}
 
-  <div>
-    {% if not is_index %}
-      {% include 'passage-end-tag.swig' %}
-    {% endif %}
-  </div>
   </article>
 
 {% endmacro %}
