@@ -13,12 +13,11 @@ password:
 
 ``` code
 # Site
-title: Alvabill
+title: XXX博客
 subtitle: Stay Hungry, Stay Foolish
-author: Alvabill
-description: "Alvabill个人站，主要涉及前端知识共享、实践教程、前沿技术共同学习等方面"  #网站描述 SEO
-language: en
-timezone: Asia/Shanghai
+author: YMQ
+description: "YMQ个人站，主要涉及前端知识共享、实践教程、前沿技术共同学习等方面"  #网站描述 SEO
+language: zh-Hans
 ```
 "title": 博客的名称。
 "subtitle": 根据主题的不同，有的会显示有的不会显示。
