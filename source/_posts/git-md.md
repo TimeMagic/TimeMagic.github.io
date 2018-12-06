@@ -30,7 +30,7 @@ Initialized empty Git repository in /Users/michael/learngit/.git/
 
 如果你没有看到.git目录，那是因为这个目录默认是隐藏的，用ls -ah命令就可以看见。
 
-## 添加文件, 查看状态
+### 添加文件, 查看状态
 
 > * git add file.txt | file1.txt file2.txt | .
 
@@ -68,7 +68,7 @@ index 46d49bf..9247db6 100644
 
 git diff顾名思义就是查看difference，显示的格式正是Unix通用的diff格式
 
-## 版本回退
+### 版本回退
 
 ``` bash
 $ git reset --hard HEAD^ | HEAD~100
@@ -78,23 +78,23 @@ $ git reset --hard HEAD^ | HEAD~100
 > * 穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。
 > * 要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
 
-## 工作区 暂存区
+### 工作区 暂存区
 
-### 工作区（Working Directory）
+#### 工作区（Working Directory）
 
 就是你在电脑里能看到的目录
 
-## 管理修改
+### 管理修改
 
 每次修改，如果不用git add到暂存区，那就不会加入到commit中。 commit统一提交
 
-## 撤销修改
+### 撤销修改
 
 > 场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。
 > 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD <file>，就回到了场景1，第二步按场景1操作。
 > 场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。
 
-## 删除操作
+### 删除操作
 
 一种情况是确定删除
 
@@ -151,4 +151,64 @@ $ git push origin master
 
 把本地master分支的最新修改推送至GitHub，现在，你就拥有了真正的分布式版本库！
 
+### 克隆远程仓库
 
+远程库已经准备好了，下一步是用命令git clone克隆一个本地库
+
+``` bash
+$ git clone git@github.com:michaelliao/gitskills.git
+Cloning into 'gitskills'...
+remote: Counting objects: 3, done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 3
+Receiving objects: 100% (3/3), done.
+```
+Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快。
+
+## 分支管理
+
+master分支。HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以，HEAD指向的就是当前分支。
+
+一开始的时候，master分支是一条线，Git用master指向最新的提交，再用HEAD指向master，就能确定当前分支，以及当前分支的提交点：
+
+原理：
+
+内容待定
+
+首先，我们创建dev分支，然后切换到dev分支：
+ 
+``` bash
+$ git branch -b dev
+Switched to a new branch 'dev'
+```
+
+用git branch命令查看当前分支：
+
+``` bash
+$ git branch
+* dev
+  master
+```
+
+分支切换
+
+``` bash
+$ git checkout master
+Switched to branch 'master'
+```
+
+合并分支
+
+``` bash
+$ git merge dev
+Updating d46f35e..b17d20e
+Fast-forward
+ readme.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+
+合并完成后，就可以放心地删除dev分支了：
+
+``` bash
+$ git branch -d dev
+Deleted branch dev (was b17d20e).
+```
