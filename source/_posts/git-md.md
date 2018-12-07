@@ -16,6 +16,7 @@ $ git config --global user.email "email@example.com"
 ```
 
 在进入到log界面下，退出只需要在英文状态下，按下Q键即可
+在vim的编辑状态下，编辑完事之后，通过输入 ：wq  即可退出编辑保存
 
 ## 创建版本库 repository
 
@@ -527,4 +528,30 @@ diff --git a/readme.txt b/readme.txt
 $ git config --global alias.st status
 ```
 
+``` bash
+$ git st   // 相当于 git status
+```
 
+``` bash
+$ git config --global alias.unstage 'reset HEAD'
+```
+
+``` bash
+$ git unstage test.py   // 相当于 $ git reset HEAD test.py
+```
+
+**配置文件**
+
+配置Git的时候，加上--global是针对当前用户起作用的，如果不加，那只针对当前的仓库起作用。
+
+配置文件放哪了？每个仓库的Git配置文件都放在.git/config文件中：
+
+别名就在[alias]后面，要删除别名，直接把对应的行删掉即可。
+
+而当前用户的Git配置文件放在用户主目录下的一个隐藏文件.gitconfig中：
+
+## 忽略文件
+
+忽略某些文件时，需要编写.gitignore；
+
+.gitignore文件本身要放到版本库里，并且可以对.gitignore做版本管理！
