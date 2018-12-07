@@ -236,4 +236,196 @@ Git还会自动提示我们当前master分支比远程的master分支要超前1�
 
 如果要强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息。
 
-test
+### bug修复（hotfix）
+
+一种情况，在dev分支开发的时候，突然有紧急bug要修复，手头工作还没有完成。而且要切换到其他分支，这个时候怎么办。
+可以通过下面命令
+
+``` bash
+$ git stash
+```
+
+把暂时修改的没有保存的文件缓存起来，此时工作区变成最近的版本内容。这个时候就可以切换了。修复完bug回来，dev暂时是不显示之前没有完成的工作内容的.
+
+刚才的工作现场存到哪去了？用git stash list命令看看：
+
+``` bash
+$ git stash list
+stash@{0}: WIP on dev: f52c633 add merge
+```
+
+一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除；
+
+另一种方式是用git stash pop，恢复的同时把stash内容也删了：
+
+``` bash
+$ git stash apply stash@{0}
+```
+
+修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除；
+
+当手头工作没有完成时，先把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场。
+
+### 多人协作
+
+当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。
+
+要查看远程库的信息，用git remote：
+
+``` bash
+$ git remote
+origin
+```
+
+用git remote -v显示更详细的信息：
+
+``` bash
+$ git remote -v
+origin  git@github.com:TimeMagic/TimeMagic.git (fetch)
+origin  git@github.com:TimeMagic/TimeMagic.git (push)
+```
+
+#### 推送分支
+
+推送分支，就是把该分支上的所有本地提交推送到远程库。推送时，要指定本地分支，这样，Git就会把该分支推送到远程库对应的远程分支上：
+
+``` bash
+$ git push origin master
+```
+
+如果要推送其他分支，比如dev，就改成：
+
+``` bash
+$ git push origin dev
+```
+
+但是，并不是一定要把本地分支往远程推送，那么，哪些分支需要推送，哪些不需要呢？
+
+> * master分支是主分支，因此要时刻与远程同步；
+> * dev分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步；
+> * bug分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug；
+> * feature分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。
+
+总之，就是在Git中，分支完全可以在本地自己藏着玩，是否推送，视你的心情而定！
+
+#### 抓取分支
+
+多人协作时，大家都会往master和dev分支上推送各自的修改。
+现在，模拟一个你的小伙伴，可以在另一台电脑（注意要把SSH Key添加到GitHub）或者同一台电脑的另一个目录下克隆：
+
+当你的小伙伴从远程库clone时，默认情况下，你的小伙伴只能看到本地的master分支。不信可以用git branch命令看看：
+
+``` bash
+$ git branch
+* master
+```
+
+现在，你的小伙伴要在dev分支上开发，就必须创建远程origin的dev分支到本地，于是他用这个命令创建本地dev分支：
+
+``` bash
+$ git checkout -b dev origin/dev
+```
+
+现在，他就可以在dev上继续修改，然后，时不时地把dev分支push到远程,你的小伙伴已经向origin/dev分支推送了他的提交，而碰巧你也对同样的文件作了修改，并试图推送。
+
+``` bash
+$ cat env.txt
+env
+
+$ git add env.txt
+
+$ git commit -m "add new env"
+[dev 7bd91f1] add new env
+ 1 file changed, 1 insertion(+)
+ create mode 100644 env.txt
+
+$ git push origin dev
+To github.com:michaelliao/learngit.git
+ ! [rejected]        dev -> dev (non-fast-forward)
+error: failed to push some refs to 'git@github.com:michaelliao/learngit.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+推送失败，因为你的小伙伴的最新提交和你试图推送的提交有冲突，解决办法也很简单，Git已经提示我们，先用git pull把最新的提交从origin/dev抓下来，然后，在本地合并，解决冲突，再推送：
+
+``` bash
+$ git pull
+There is no tracking information for the current branch.
+Please specify which branch you want to merge with.
+See git-pull(1) for details.
+
+    git pull <remote> <branch>
+
+If you wish to set tracking information for this branch you can do so with:
+
+    git branch --set-upstream-to=origin/<branch> dev
+```
+
+git pull也失败了，原因是没有指定本地dev分支与远程origin/dev分支的链接，根据提示，设置dev和origin/dev的链接：
+
+``` bash
+$ git branch --set-upstream-to=origin/dev dev
+Branch 'dev' set up to track remote branch 'dev' from 'origin'.
+```
+
+再pull：
+
+``` bash
+$ git pull
+Auto-merging env.txt
+CONFLICT (add/add): Merge conflict in env.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+这回git pull成功，但是合并有冲突，需要手动解决，解决的方法和分支管理中的解决冲突完全一样。解决后，提交，再push：
+
+``` bash
+$ git commit -m "fix env conflict"
+[dev 57c53ab] fix env conflict
+
+$ git push origin dev
+Counting objects: 6, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (6/6), 621 bytes | 621.00 KiB/s, done.
+Total 6 (delta 0), reused 0 (delta 0)
+To github.com:michaelliao/learngit.git
+   7a5e5dd..57c53ab  dev -> dev
+```
+
+因此，多人协作的工作模式通常是这样：
+
+首先，可以试图用git push origin <branch-name>推送自己的修改；
+
+如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+
+如果合并有冲突，则解决冲突，并在本地提交；
+
+没有冲突或者解决掉冲突后，再用git push origin <branch-name>推送就能成功！
+
+如果git pull提示no tracking information，则说明本地分支和远程分支的链接关系没有创建，用命令git branch --set-upstream-to <branch-name> origin/<branch-name>。
+
+这就是多人协作的工作模式，一旦熟悉了，就非常简单。
+
+> * 查看远程库信息，使用git remote -v；
+> * 
+> * 本地新建的分支如果不推送到远程，对其他人就是不可见的；
+> * 
+> * 从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；
+> * 
+> * 在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；
+> * 
+> * 建立本地分支和远程分支的关联，使用git branch --set-upstream branch-name origin/是branch-name；
+> * 
+> * 从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。
+
+注意，origin 是远程分支的名称，是可以随意起的。
+
+#### Rabase
+
+
+
+
