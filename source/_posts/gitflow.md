@@ -30,7 +30,7 @@ Gitflow工作流仍然用中央仓库作为所有开发者的交互中心。和�
 
 每个新功能位于一个自己的分支，这样可以push到中央仓库以备份和协作。但功能分支不是从master分支上拉出新分支，而是使用develop分支作为父分支。当新功能完成时，合并回develop分支。新功能提交应该从不直接与master分支交互。
 
-![fn](gitflow/git-workflow-release-cycle-2feature.png)
+![gitflow](gitflow/git-workflow-release-cycle-2feature.png)
 
 注意，从各种含义和目的上来看，功能分支加上develop分支就是功能分支工作流的用法。但Gitflow工作流没有在这里止步。
 
