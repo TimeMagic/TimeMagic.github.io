@@ -57,11 +57,11 @@ Gitflow工作流仍然用中央仓库作为所有开发者的交互中心。和�
 
 为Bug修复使用专门分支，让团队可以处理掉问题而不用打断其它工作或是等待下一个发布循环。你可以把维护分支想成是一个直接在master分支上处理的临时发布。
 
-## 示例
+# 示例
 
 下面的示例演示本工作流如何用于管理单个发布循环。假设你已经创建了一个中央仓库。
 
-###创建开发分支
+##创建开发分支
 
 ![gitflow](gitflow/git-workflow-release-cycle-5createdev.png)
 
@@ -161,7 +161,7 @@ Git有提供各种勾子（hook），即仓库有事件发生时触发执行的�
 ``` bash
 git checkout -b issue-#001 master
 ```
-### Fix the bug
+## Fix the bug
 
 ``` bash
 git checkout master
