@@ -474,3 +474,57 @@ Date:   Fri May 18 21:56:54 2018 +0800
 diff --git a/readme.txt b/readme.txt	
 ```	
 
+还可以创建带有说明的标签，用-a指定标签名，-m指定说明文字：
+
+``` bash
+$ git tag -a v0.1 -m "version 0.1 released" 1094adb
+$ git show v0.1
+tag v0.1
+Tagger: Michael Liao <askxuefeng@gmail.com>
+Date:   Fri May 18 22:48:43 2018 +0800
+
+version 0.1 released
+
+commit 1094adb7b9b3807259d8cb349e7df1d4d6477073 (tag: v0.1)
+Author: Michael Liao <askxuefeng@gmail.com>
+Date:   Fri May 18 21:06:15 2018 +0800
+
+    append GPL
+
+diff --git a/readme.txt b/readme.txt
+```
+
+注意：**标签总是和某个commit挂钩。如果这个commit既出现在master分支，又出现在dev分支，那么在这两个分支上都可以看到这个标签**。
+
+> * 命令git tag <tagname>用于新建一个标签，默认为HEAD，也可以指定一个commit id；
+> * 命令git tag -a <tagname> -m "blablabla..."可以指定标签信息；
+> * 命令git tag可以查看所有标签。
+
+#### 操作标签
+
+如果标签打错了，也可以删除
+因为创建的标签都只存储在本地，不会自动推送到远程。所以，打错的标签可以在本地安全删除。
+
+如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：
+然后，从远程删除。删除命令也是push，但是格式如下：
+
+> * 命令git push origin <tagname>可以推送一个本地标签；
+> * 命令git push origin --tags可以推送全部未推送过的本地标签；
+> * 命令git tag -d <tagname>可以删除一个本地标签；
+> * 命令git push origin :refs/tags/<tagname>可以删除一个远程标签。
+
+##  小科技
+
+### git配置别名
+
+有没有经常敲错命令？比如git status？status这个单词真心不好记。
+
+如果敲git st就表示git status那就简单多了，当然这种偷懒的办法我们是极力赞成的。
+
+我们只需要敲一行命令，告诉Git，以后st就表示status：
+
+``` bash
+$ git config --global alias.st status
+```
+
+
