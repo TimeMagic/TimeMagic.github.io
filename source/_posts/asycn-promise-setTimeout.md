@@ -69,8 +69,8 @@ setTimeout
 
 那么如果不具备这些知识呢，推荐几篇我觉得讲得比较清楚的文章
 
-> * 《10分钟理解JS引擎的执行机制》：这是我之前写的讲解eventloop的文章，我觉得还算清晰，但是没涉及 async
-> * 《理解 JavaScript 的 async/await》：这是我读过的讲async await最清楚的文章
+> * [《10分钟理解JS引擎的执行机制》](https://segmentfault.com/a/1190000012806637)：这是我之前写的讲解eventloop的文章，我觉得还算清晰，但是没涉及 async
+> * [《理解 JavaScript 的 async/await》](https://segmentfault.com/a/1190000007535316)：这是我读过的讲async await最清楚的文章
 > * 《ECMAScript 6 入门 - Promise 对象》：promise就推荐阮一峰老师的ES6吧，不过不熟悉 promise 的应该较少啦。
 
 ## 主要内容
@@ -206,7 +206,7 @@ console.log("script end");
 
 先分享一个我个人理解的宏任务和微任务的慨念，在我脑海中宏任务和为微任务如图所示
 
-![png1](async-promise-setTimeout/2018-12-10-01.png);
+![png1](asycn-promise-setTimeout/2018-12-10-01.png)
 
 也就是「宏任务」、「微任务」都是队列。
 
@@ -225,20 +225,20 @@ console.log("script end");
 console.log('script start')
 ```
 
-![png1](async-promise-setTimeout/2018-12-10-02.png);
+![png1](asycn-promise-setTimeout/2018-12-10-02.png)
 
 
 **将setTimeout放入宏任务队列**
 
 默认所包裹的代码，其实可以理解为是第一个宏任务，所以这里是宏任务2
 
-![png1](async-promise-setTimeout/2018-12-10-03.png);
+![png1](asycn-promise-setTimeout/2018-12-10-03.png)
 
 **调用async1，打印 同步代码 console.log( ‘async1 start’ )**
 
 我们说过看到带有async关键字的函数，不用害怕，它的仅仅是把return值包装成了promise，其他并没有什么不同的地方。所以就很普通的打印 console.log( ‘async1 start’ )
 
-![png1](async-promise-setTimeout/2018-12-10-04.png);
+![png1](asycn-promise-setTimeout/2018-12-10-04.png)
 
 **分析一下 await async2()**
 
@@ -249,13 +249,13 @@ console.log('script start')
 
 目前就直接打印 console.log(‘async2’)
 
-![png1](async-promise-setTimeout/2018-12-10-05.png);
+![png1](asycn-promise-setTimeout/2018-12-10-05.png)
 
 **被阻塞后，要执行async之外的代码**
 
 执行new Promise()，Promise构造函数是直接调用的同步代码，所以 console.log( ‘promise1’ )
 
-![png1](async-promise-setTimeout/2018-12-10-06.png);
+![png1](asycn-promise-setTimeout/2018-12-10-06.png)
 
 **代码运行到promise.then()**
 
@@ -263,7 +263,7 @@ console.log('script start')
 
 **注意：这里只是把promise2推入微任务队列，并没有执行。微任务会在当前宏任务的同步代码执行完毕，才会依次执行**
 
-![png1](async-promise-setTimeout/2018-12-10-07.png);
+![png1](asycn-promise-setTimeout/2018-12-10-07.png)
 
 **打印同步代码 console.log(‘script end’)**
 
@@ -293,7 +293,7 @@ console.log('script start')
 
 所以这里的 await Promise.resolve() 就类似于
 
-![png1](async-promise-setTimeout/2018-12-10-08.png);
+![png1](asycn-promise-setTimeout/2018-12-10-08.png)
 
 把then的第一个回调参数 (undefined) => {} 推入微任务队列。
 
@@ -303,7 +303,7 @@ await async2()执行结束，才能继续执行后面的代码
 
 如图
 
-![png1](async-promise-setTimeout/2018-12-10-09.png);
+![png1](asycn-promise-setTimeout/2018-12-10-09.png)
 
 此时当前宏任务1都执行完了，要处理微任务队列里的代码。
 
