@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="javascript,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="为什么写这篇文章？说实话，关于js的异步执行顺序，宏任务、微任务这些，或者async/await这些慨念已经有非常多的文章写了。 但是怎么说呢，简单来说，业务中很少用async，不太懂async呢。 研究了一天，感觉懂了，所手痒想写一篇 ，哈哈。 毕竟自己学会的知识，如果连表达清楚都做不到，怎么能指望自己用好它呢？ 测试一下自己有没有必要看所以我写这个的文章，主要还是交流学习，如果您已经清楚了ev">
+<meta name="keywords" content="javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="看清 async&#x2F;await 和 promise 的执行顺序">
+<meta property="og:url" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/index.html">
+<meta property="og:site_name" content="时间魔法师的博客">
+<meta property="og:description" content="为什么写这篇文章？说实话，关于js的异步执行顺序，宏任务、微任务这些，或者async/await这些慨念已经有非常多的文章写了。 但是怎么说呢，简单来说，业务中很少用async，不太懂async呢。 研究了一天，感觉懂了，所手痒想写一篇 ，哈哈。 毕竟自己学会的知识，如果连表达清楚都做不到，怎么能指望自己用好它呢？ 测试一下自己有没有必要看所以我写这个的文章，主要还是交流学习，如果您已经清楚了ev">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-01.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-02.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-03.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-04.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-05.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-06.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-07.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-08.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-09.png">
+<meta property="og:updated_time" content="2018-12-11T05:08:50.535Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="看清 async&#x2F;await 和 promise 的执行顺序">
+<meta name="twitter:description" content="为什么写这篇文章？说实话，关于js的异步执行顺序，宏任务、微任务这些，或者async/await这些慨念已经有非常多的文章写了。 但是怎么说呢，简单来说，业务中很少用async，不太懂async呢。 研究了一天，感觉懂了，所手痒想写一篇 ，哈哈。 毕竟自己学会的知识，如果连表达清楚都做不到，怎么能指望自己用好它呢？ 测试一下自己有没有必要看所以我写这个的文章，主要还是交流学习，如果您已经清楚了ev">
+<meta name="twitter:image" content="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/2018-12-10-01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/">
+
+
+
+
+
+  <title>看清 async/await 和 promise 的执行顺序 | 时间魔法师的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">时间魔法师的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">人生在于折腾</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/11/asycn-promise-setTimeout/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YMQ">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/yingyan.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="时间魔法师的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">看清 async/await 和 promise 的执行顺序</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-11T09:01:58+08:00">
+                2018-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVASCRIPT/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVASCRIPT</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="为什么写这篇文章？"><a href="#为什么写这篇文章？" class="headerlink" title="为什么写这篇文章？"></a>为什么写这篇文章？</h2><p>说实话，关于js的异步执行顺序，宏任务、微任务这些，或者async/await这些慨念已经有非常多的文章写了。</p>
+<p>但是怎么说呢，简单来说，业务中很少用async，不太懂async呢。</p>
+<p>研究了一天，感觉懂了，所手痒想写一篇 ，哈哈。</p>
+<p>毕竟自己学会的知识，如果连表达清楚都做不到，怎么能指望自己用好它呢？</p>
+<h2 id="测试一下自己有没有必要看"><a href="#测试一下自己有没有必要看" class="headerlink" title="测试一下自己有没有必要看"></a>测试一下自己有没有必要看</h2><p>所以我写这个的文章，主要还是交流学习，如果您已经清楚了eventloop/async/await/promise这些东西呢，可以 break 啦</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async1</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"async1 start"</span>);</span><br><span class="line">    await async2();</span><br><span class="line">    console.log(<span class="string">"async1 end"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async2</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"async2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"script start"</span>);</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="title">function</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"setTimeout"</span>);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">async1();</span><br><span class="line"></span><br><span class="line">new Promise(<span class="keyword">function</span>(resolve) &#123;</span><br><span class="line">    console.log(<span class="string">"promise1"</span>);</span><br><span class="line">    resolve();</span><br><span class="line">&#125;).<span class="keyword">then</span>(<span class="function"><span class="title">function</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"promise2"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"script end"</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：因为是一道前端面试题，所以答案是以浏览器的eventloop机制为准的，在node平台上运行会有差异。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">script start</span><br><span class="line">async1 start</span><br><span class="line">async2</span><br><span class="line">promise1</span><br><span class="line">script end</span><br><span class="line">promise2</span><br><span class="line">async1 end</span><br><span class="line">setTimeout</span><br></pre></td></tr></table></figure>
+<h2 id="需要具备的前置知识"><a href="#需要具备的前置知识" class="headerlink" title="需要具备的前置知识"></a>需要具备的前置知识</h2><blockquote>
+<ul>
+<li>promise的使用经验</li>
+<li>浏览器端的eventloop</li>
+</ul>
+</blockquote>
+<p>那么如果不具备这些知识呢，推荐几篇我觉得讲得比较清楚的文章</p>
+<blockquote>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000012806637" target="_blank" rel="noopener">《10分钟理解JS引擎的执行机制》</a>：这是我之前写的讲解eventloop的文章，我觉得还算清晰，但是没涉及 async</li>
+<li><a href="https://segmentfault.com/a/1190000007535316" target="_blank" rel="noopener">《理解 JavaScript 的 async/await》</a>：这是我读过的讲async await最清楚的文章</li>
+<li>《ECMAScript 6 入门 - Promise 对象》：promise就推荐阮一峰老师的ES6吧，不过不熟悉 promise 的应该较少啦。</li>
+</ul>
+</blockquote>
+<h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><h3 id="第1部分：对于async-await的理解"><a href="#第1部分：对于async-await的理解" class="headerlink" title="第1部分：对于async await的理解"></a>第1部分：对于async await的理解</h3><blockquote>
+<ul>
+<li>async 做一件什么事情？</li>
+<li>await 在等什么？</li>
+<li>await 等到之后，做了一件什么事情？</li>
+<li>async/await 比 promise有哪些优势？（回头补充）</li>
+</ul>
+</blockquote>
+<h4 id="async-做一件什么事情？"><a href="#async-做一件什么事情？" class="headerlink" title="async 做一件什么事情？"></a>async 做一件什么事情？</h4><p><strong>带 async 关键字的函数，它使得你的函数的返回值必定是 promise 对象</strong></p>
+<p>也就是</p>
+<p>如果async关键字函数返回的不是promise，会自动用Promise.resolve()包装</p>
+<p>如果async关键字函数显式地返回promise，那就以你返回的promise为准</p>
+<p>这是一个简单的例子，可以看到 async 关键字函数和普通函数的返回值的区别</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">fn1</span></span>()&#123;</span><br><span class="line">    <span class="built_in">return</span> 123</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">fn2</span></span>()&#123;</span><br><span class="line">    <span class="built_in">return</span> 123</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(fn1())</span><br><span class="line">console.log(fn2())</span><br><span class="line"></span><br><span class="line">Promise &#123;&lt;resolved&gt;: 123&#125;</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+<p>所以你看，async 函数也没啥了不起的，以后看到带有 async 关键字的函数也不用慌张，你就想它无非就是把return值包装了一下，其他就跟普通函数一样。</p>
+<p>关于async关键字还有那些要注意的？</p>
+<blockquote>
+<ul>
+<li>在语义上要理解，async表示函数内部有异步操作</li>
+<li>另外注意，一般 await 关键字要在 async 关键字函数的内部，await 写在外面会报错。</li>
+</ul>
+</blockquote>
+<h4 id="await-在等什么？"><a href="#await-在等什么？" class="headerlink" title="await 在等什么？"></a>await 在等什么？</h4><p><strong>await等的是右侧「表达式」的结果</strong></p>
+<p>也就是说，</p>
+<p>右侧如果是函数，那么函数的return值就是「表达式的结果」</p>
+<p>右侧如果是一个 ‘hello’ 或者什么值，那表达式的结果就是 ‘hello’</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async1</span></span>() &#123;</span><br><span class="line">    console.log( <span class="string">'async1 start'</span> )</span><br><span class="line">    await async2()</span><br><span class="line">    console.log( <span class="string">'async1 end'</span> )</span><br><span class="line">&#125;</span><br><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async2</span></span>() &#123;</span><br><span class="line">    console.log( <span class="string">'async2'</span> )</span><br><span class="line">&#125;</span><br><span class="line">async1()</span><br><span class="line">console.log( <span class="string">'script start'</span> )</span><br></pre></td></tr></table></figure>
+<p>结果<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">async1 start</span><br><span class="line">async2</span><br><span class="line">script start</span><br><span class="line">async1 end</span><br></pre></td></tr></table></figure></p>
+<p>这里注意一点，可能大家都知道await会让出线程，阻塞后面的代码，那么上面例子中， ‘async2’ 和 ‘script start’ 谁先打印呢？</p>
+<p>是从左向右执行，一旦碰到await直接跳出, 阻塞async2()的执行？</p>
+<p>还是从右向左，先执行async2后，发现有await关键字，于是让出线程，阻塞代码呢？</p>
+<p><strong>实践的结论是，从右向左的。先打印async2，后打印的script start</strong></p>
+<p>之所以提一嘴，是因为我经常看到这样的说法，「一旦遇到await就立刻让出线程，阻塞后面的代码」</p>
+<p>这样的说法，会让我误以为，await后面那个函数， async2()也直接被阻塞呢。</p>
+<p>await 等到之后，做了一件什么事情？<br>那么右侧表达式的结果，就是await要等的东西。</p>
+<p>等到之后，对于await来说，分2个情况</p>
+<blockquote>
+<ul>
+<li>不是promise对象</li>
+<li>是promise对象</li>
+</ul>
+</blockquote>
+<p><strong>如果不是 promise , await会阻塞后面的代码，先执行async外面的同步代码，同步代码执行完，再回到async内部，把这个非promise的东西，作为 await表达式的结果</strong></p>
+<p><strong>如果它等到的是一个 promise 对象，await 也会暂停async后面的代码，先执行async外面的同步代码，等着 Promise 对象 fulfilled，然后把 resolve 的参数作为 await 表达式的运算结果。</strong></p>
+<h3 id="第2部分：画图一步步看清宏任务、微任务的执行过程"><a href="#第2部分：画图一步步看清宏任务、微任务的执行过程" class="headerlink" title="第2部分：画图一步步看清宏任务、微任务的执行过程"></a>第2部分：画图一步步看清宏任务、微任务的执行过程</h3><p>我们以开篇的经典面试题为例，分析这个例子中的宏任务和微任务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async1</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"async1 start"</span>);</span><br><span class="line">    await async2();</span><br><span class="line">    console.log(<span class="string">"async1 end"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async2</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"async2"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"script start"</span>);</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="title">function</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"setTimeout"</span>);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">async1();</span><br><span class="line"></span><br><span class="line">new Promise(<span class="keyword">function</span>(resolve) &#123;</span><br><span class="line">    console.log(<span class="string">"promise1"</span>);</span><br><span class="line">    resolve();</span><br><span class="line">&#125;).<span class="keyword">then</span>(<span class="function"><span class="title">function</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"promise2"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"script end"</span>);</span><br></pre></td></tr></table></figure>
+<p>先分享一个我个人理解的宏任务和微任务的慨念，在我脑海中宏任务和为微任务如图所示</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-01.png" alt="png1"></p>
+<p>也就是「宏任务」、「微任务」都是队列。</p>
+<p>一段代码执行时，会先执行宏任务中的同步代码，</p>
+<p>如果执行中遇到setTimeout之类宏任务，那么就把这个setTimeout内部的函数推入「宏任务的队列」中，下一轮宏任务执行时调用。<br>如果执行中遇到promise.then()之类的微任务，就会推入到「当前宏任务的微任务队列」中，在本轮宏任务的同步代码执行都完成后，依次执行所有的微任务1、2、3<br>下面就以面试题为例子，分析这段代码的执行顺序。</p>
+<p>每次宏任务和微任务发生变化，我都会画一个图来表示他们的变化</p>
+<p><strong>直接打印同步代码 console.log(‘script start’)</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 首先是2个函数声明，虽然有async关键字，但不是调用我们就不看。然后首先是打印同步代码 </span><br><span class="line">console.log(<span class="string">'script start'</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-02.png" alt="png1"></p>
+<p><strong>将setTimeout放入宏任务队列</strong></p>
+<p>默认所包裹的代码，其实可以理解为是第一个宏任务，所以这里是宏任务2</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-03.png" alt="png1"></p>
+<p><strong>调用async1，打印 同步代码 console.log( ‘async1 start’ )</strong></p>
+<p>我们说过看到带有async关键字的函数，不用害怕，它的仅仅是把return值包装成了promise，其他并没有什么不同的地方。所以就很普通的打印 console.log( ‘async1 start’ )</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-04.png" alt="png1"></p>
+<p><strong>分析一下 await async2()</strong></p>
+<p>前文提过await，1.它先计算出右侧的结果，2.然后看到await后，中断async函数</p>
+<blockquote>
+<ul>
+<li>先得到await右侧表达式的结果。执行async2()，打印同步代码console.log(‘async2’), 并且return Promise.resolve(undefined)</li>
+<li>await后，中断async函数，先执行async外的同步代码</li>
+</ul>
+</blockquote>
+<p>目前就直接打印 console.log(‘async2’)</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-05.png" alt="png1"></p>
+<p><strong>被阻塞后，要执行async之外的代码</strong></p>
+<p>执行new Promise()，Promise构造函数是直接调用的同步代码，所以 console.log( ‘promise1’ )</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-06.png" alt="png1"></p>
+<p><strong>代码运行到promise.then()</strong></p>
+<p>代码运行到promise.then()，发现这个是微任务，所以暂时不打印，只是推入当前宏任务的微任务队列中。</p>
+<p><strong>注意：这里只是把promise2推入微任务队列，并没有执行。微任务会在当前宏任务的同步代码执行完毕，才会依次执行</strong></p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-07.png" alt="png1"></p>
+<p><strong>打印同步代码 console.log(‘script end’)</strong></p>
+<p>没什么好说的。执行完这个同步代码后，「async外的代码」终于走了一遍</p>
+<p>下面该回到 await 表达式那里，执行await Promise.resolve(undefined)了</p>
+<p><strong>回到async内部，执行await Promise.resolve(undefined)</strong></p>
+<p>这部分可能不太好理解，我尽量表达我的想法。</p>
+<p>对于 await Promise.resolve(undefined) 如何理解呢？</p>
+<p>根据 MDN 原话我们知道</p>
+<p><strong>如果一个 Promise 被传递给一个 await 操作符，await 将等待 Promise 正常处理完成并返回其处理结果。</strong></p>
+<p>在我们这个例子中，就是Promise.resolve(undefined)正常处理完成，并返回其处理结果。那么await async2()就算是执行结束了。</p>
+<p>目前这个promise的状态是fulfilled，等其处理结果返回就可以执行await下面的代码了。</p>
+<p>那何时能拿到处理结果呢？</p>
+<p>回忆平时我们用promise，调用resolve后，何时能拿到处理结果？是不是需要在then的第一个参数里，才能拿到结果。</p>
+<p>（调用resolve时，会把then的参数推入微任务队列，等主线程空闲时，再调用它）</p>
+<p>所以这里的 await Promise.resolve() 就类似于</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-08.png" alt="png1"></p>
+<p>把then的第一个回调参数 (undefined) =&gt; {} 推入微任务队列。</p>
+<p>then执行完，才是await async2()执行结束。</p>
+<p>await async2()执行结束，才能继续执行后面的代码</p>
+<p>如图</p>
+<p><img src="/2018/12/11/asycn-promise-setTimeout/2018-12-10-09.png" alt="png1"></p>
+<p>此时当前宏任务1都执行完了，要处理微任务队列里的代码。</p>
+<p><strong>微任务队列，先进选出的原则</strong></p>
+<blockquote>
+<ul>
+<li>执行微任务1，打印promise2</li>
+<li>执行微任务2，没什么内容..</li>
+</ul>
+</blockquote>
+<p>但是微任务2执行后，await async2()语句结束，后面的代码不再被阻塞，所以打印</p>
+<p>console.log(‘async1 end’)</p>
+<p>宏任务1执行完成后,执行宏任务2</p>
+<p>宏任务2的执行比较简单，就是打印</p>
+<p>console.log(‘setTimeout’)</p>
+<p>至此完结</p>
+<p>补充：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">async <span class="keyword">function</span> <span class="function"><span class="title">async1</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"async start"</span>)</span><br><span class="line">    await async2()</span><br><span class="line">    console.log(<span class="string">"async end"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">async2</span></span>() &#123; // 变成同步函数，区别于例子</span><br><span class="line">    console.log(<span class="string">"async2"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"start"</span>)</span><br><span class="line"></span><br><span class="line">async1()</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="title">function</span></span>() &#123;</span><br><span class="line">    console.log(<span class="string">"setTimeout start"</span>)</span><br><span class="line">&#125;, 0)</span><br><span class="line"></span><br><span class="line">new Promise(<span class="keyword">function</span>(resolve) &#123;</span><br><span class="line">    console.log(<span class="string">"promise1"</span>)</span><br><span class="line">    resolve();</span><br><span class="line">&#125;).<span class="keyword">then</span>(() =&gt; &#123;</span><br><span class="line">    console.log(<span class="string">"promise2"</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">"script end"</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">start</span><br><span class="line">async start</span><br><span class="line">async2</span><br><span class="line">promise1</span><br><span class="line">script end</span><br><span class="line">async end</span><br><span class="line">promise2</span><br><span class="line">setTimeout start</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #555;font-size:14px;">-------------The End-------------</div>
+    
+</div>
+        
+      </div>
+
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"><i class="fa fa-tag"></i> javascript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/10/webpack4配置/" rel="next" title="webpack4配置">
+                <i class="fa fa-chevron-left"></i> webpack4配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/yingyan.jpg" alt="YMQ">
+            
+              <p class="site-author-name" itemprop="name">YMQ</p>
+              <p class="site-description motion-element" itemprop="description">前端,博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/TimeMagic" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/p/1f8107a8778c" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.alloyteam.com/nav/" title="Web前端导航" target="_blank">Web前端导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.chuangzaoshi.com/code" title="创造狮导航" target="_blank">创造狮导航</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.36zhen.com/t?id=3448" title="前端书籍资料" target="_blank">前端书籍资料</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/timeline" title="掘金" target="_blank">掘金</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://e.xitu.io/" title="掘金酱" target="_blank">掘金酱</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.v2ex.com/" title="V2EX" target="_blank">V2EX</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.runoob.com/" title="菜鸟教程" target="_blank">菜鸟教程</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么写这篇文章？"><span class="nav-number">1.</span> <span class="nav-text">为什么写这篇文章？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试一下自己有没有必要看"><span class="nav-number">2.</span> <span class="nav-text">测试一下自己有没有必要看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需要具备的前置知识"><span class="nav-number">3.</span> <span class="nav-text">需要具备的前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要内容"><span class="nav-number">4.</span> <span class="nav-text">主要内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第1部分：对于async-await的理解"><span class="nav-number">4.1.</span> <span class="nav-text">第1部分：对于async await的理解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#async-做一件什么事情？"><span class="nav-number">4.1.1.</span> <span class="nav-text">async 做一件什么事情？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#await-在等什么？"><span class="nav-number">4.1.2.</span> <span class="nav-text">await 在等什么？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第2部分：画图一步步看清宏任务、微任务的执行过程"><span class="nav-number">4.2.</span> <span class="nav-text">第2部分：画图一步步看清宏任务、微任务的执行过程</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YMQ</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
