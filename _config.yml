@@ -81,3 +81,10 @@ deploy:
   type: git
   branch: master
   repo: git@github.com:TimeMagic/TimeMagic.github.io.git
+
+# Search
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
