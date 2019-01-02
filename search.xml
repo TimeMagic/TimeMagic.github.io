@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[npm教程]]></title>
+    <url>%2F2019%2F01%2F02%2Fnpm%E6%95%99%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[npm教程欢迎使用 Markdown 编辑阅读器我们理解您需要更便捷更高效的工具记录思想，整理笔记、知识，并将其中承载的价值传播给他人，Markdown 是我们给出的答案 —— 我们为记录思想和分享知识提供更专业的工具。 您可以使用 Markdown： 整理知识，学习笔记 发布日记，杂文，所见所想 撰写发布技术文稿（代码支持） 撰写发布学术论文（LaTeX 公式支持） Windows/Mac/Linux 全平台客户端 请保留此份 Cmd Markdown 的欢迎稿兼使用说明，如需撰写新稿件，点击顶部工具栏右侧的 新文稿 或者使用快捷键 Ctrl+Alt+N。 分割不同的段落，粗体 或者 斜体 某些文字 支持以 PDF 格式导出文稿 改进 Cmd 渲染算法，使用局部渲染技术提高渲染效率 新增 Todo 列表功能 修复 LaTex 公式渲染问题 新增 LaTex 公式编号功能 1234567@requires_authorizationclass SomeClass: passif __name__ == '__main__': # A comment print 'hello world' 12345678st=&gt;start: Startop=&gt;operation: Your Operationcond=&gt;condition: Yes or No?e=&gt;endst-&gt;op-&gt;condcond(yes)-&gt;econd(no)-&gt;op 123Alice-&gt;Bob: Hello Bob, how are you?Note right of Bob: Bob thinksBob--&gt;Alice: I am good thanks! 12345678910111213title 项目开发流程section 项目确定 需求分析 :a1, 2016-06-22, 3d 可行性报告 :after a1, 5d 概念验证 : 5dsection 项目实施 概要设计 :2016-07-05 , 5d 详细设计 :2016-07-08, 10d 编码 :2016-07-15, 10d 测试 :2016-07-22, 5dsection 发布验收 发布: 2d 验收: 3d 项目 价格 数量 计算机 \$1600 5 手机 \$12 12 管线 \$1 234 同时在 编辑工具栏 的最右侧提示 已保存 的字样]]></content>
+      <categories>
+        <category>npm</category>
+      </categories>
+      <tags>
+        <tag>npm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[看清 async/await 和 promise 的执行顺序]]></title>
+    <url>%2F2018%2F12%2F11%2Fasycn-promise-setTimeout%2F</url>
+    <content type="text"><![CDATA[为什么写这篇文章？说实话，关于js的异步执行顺序，宏任务、微任务这些，或者async/await这些慨念已经有非常多的文章写了。 但是怎么说呢，简单来说，业务中很少用async，不太懂async呢。 研究了一天，感觉懂了，所手痒想写一篇 ，哈哈。 毕竟自己学会的知识，如果连表达清楚都做不到，怎么能指望自己用好它呢？ 测试一下自己有没有必要看所以我写这个的文章，主要还是交流学习，如果您已经清楚了eventloop/async/await/promise这些东西呢，可以 break 啦 1234567891011121314151617181920212223242526async function async1() &#123; console.log("async1 start"); await async2(); console.log("async1 end");&#125;async function async2() &#123; console.log("async2");&#125;console.log("script start");setTimeout(function() &#123; console.log("setTimeout");&#125;, 0);async1();new Promise(function(resolve) &#123; console.log("promise1"); resolve();&#125;).then(function() &#123; console.log("promise2");&#125;);console.log("script end"); 注：因为是一道前端面试题，所以答案是以浏览器的eventloop机制为准的，在node平台上运行会有差异。 12345678script startasync1 startasync2promise1script endpromise2async1 endsetTimeout 需要具备的前置知识 promise的使用经验 浏览器端的eventloop 那么如果不具备这些知识呢，推荐几篇我觉得讲得比较清楚的文章 《10分钟理解JS引擎的执行机制》：这是我之前写的讲解eventloop的文章，我觉得还算清晰，但是没涉及 async 《理解 JavaScript 的 async/await》：这是我读过的讲async await最清楚的文章 《ECMAScript 6 入门 - Promise 对象》：promise就推荐阮一峰老师的ES6吧，不过不熟悉 promise 的应该较少啦。 主要内容第1部分：对于async await的理解 async 做一件什么事情？ await 在等什么？ await 等到之后，做了一件什么事情？ async/await 比 promise有哪些优势？（回头补充） async 做一件什么事情？带 async 关键字的函数，它使得你的函数的返回值必定是 promise 对象 也就是 如果async关键字函数返回的不是promise，会自动用Promise.resolve()包装 如果async关键字函数显式地返回promise，那就以你返回的promise为准 这是一个简单的例子，可以看到 async 关键字函数和普通函数的返回值的区别 12345678910111213async function fn1()&#123; return 123&#125;function fn2()&#123; return 123&#125;console.log(fn1())console.log(fn2())Promise &#123;&lt;resolved&gt;: 123&#125;123 所以你看，async 函数也没啥了不起的，以后看到带有 async 关键字的函数也不用慌张，你就想它无非就是把return值包装了一下，其他就跟普通函数一样。 关于async关键字还有那些要注意的？ 在语义上要理解，async表示函数内部有异步操作 另外注意，一般 await 关键字要在 async 关键字函数的内部，await 写在外面会报错。 await 在等什么？await等的是右侧「表达式」的结果 也就是说， 右侧如果是函数，那么函数的return值就是「表达式的结果」 右侧如果是一个 ‘hello’ 或者什么值，那表达式的结果就是 ‘hello’ 12345678910async function async1() &#123; console.log( 'async1 start' ) await async2() console.log( 'async1 end' )&#125;async function async2() &#123; console.log( 'async2' )&#125;async1()console.log( 'script start' ) 结果1234async1 startasync2script startasync1 end 这里注意一点，可能大家都知道await会让出线程，阻塞后面的代码，那么上面例子中， ‘async2’ 和 ‘script start’ 谁先打印呢？ 是从左向右执行，一旦碰到await直接跳出, 阻塞async2()的执行？ 还是从右向左，先执行async2后，发现有await关键字，于是让出线程，阻塞代码呢？ 实践的结论是，从右向左的。先打印async2，后打印的script start 之所以提一嘴，是因为我经常看到这样的说法，「一旦遇到await就立刻让出线程，阻塞后面的代码」 这样的说法，会让我误以为，await后面那个函数， async2()也直接被阻塞呢。 await 等到之后，做了一件什么事情？那么右侧表达式的结果，就是await要等的东西。 等到之后，对于await来说，分2个情况 不是promise对象 是promise对象 如果不是 promise , await会阻塞后面的代码，先执行async外面的同步代码，同步代码执行完，再回到async内部，把这个非promise的东西，作为 await表达式的结果 如果它等到的是一个 promise 对象，await 也会暂停async后面的代码，先执行async外面的同步代码，等着 Promise 对象 fulfilled，然后把 resolve 的参数作为 await 表达式的运算结果。 第2部分：画图一步步看清宏任务、微任务的执行过程我们以开篇的经典面试题为例，分析这个例子中的宏任务和微任务。 1234567891011121314151617181920212223242526async function async1() &#123; console.log("async1 start"); await async2(); console.log("async1 end");&#125;async function async2() &#123; console.log("async2");&#125;console.log("script start");setTimeout(function() &#123; console.log("setTimeout");&#125;, 0);async1();new Promise(function(resolve) &#123; console.log("promise1"); resolve();&#125;).then(function() &#123; console.log("promise2");&#125;);console.log("script end"); 先分享一个我个人理解的宏任务和微任务的慨念，在我脑海中宏任务和为微任务如图所示 也就是「宏任务」、「微任务」都是队列。 一段代码执行时，会先执行宏任务中的同步代码， 如果执行中遇到setTimeout之类宏任务，那么就把这个setTimeout内部的函数推入「宏任务的队列」中，下一轮宏任务执行时调用。如果执行中遇到promise.then()之类的微任务，就会推入到「当前宏任务的微任务队列」中，在本轮宏任务的同步代码执行都完成后，依次执行所有的微任务1、2、3下面就以面试题为例子，分析这段代码的执行顺序。 每次宏任务和微任务发生变化，我都会画一个图来表示他们的变化 直接打印同步代码 console.log(‘script start’) 12// 首先是2个函数声明，虽然有async关键字，但不是调用我们就不看。然后首先是打印同步代码 console.log('script start') 将setTimeout放入宏任务队列 默认所包裹的代码，其实可以理解为是第一个宏任务，所以这里是宏任务2 调用async1，打印 同步代码 console.log( ‘async1 start’ ) 我们说过看到带有async关键字的函数，不用害怕，它的仅仅是把return值包装成了promise，其他并没有什么不同的地方。所以就很普通的打印 console.log( ‘async1 start’ ) 分析一下 await async2() 前文提过await，1.它先计算出右侧的结果，2.然后看到await后，中断async函数 先得到await右侧表达式的结果。执行async2()，打印同步代码console.log(‘async2’), 并且return Promise.resolve(undefined) await后，中断async函数，先执行async外的同步代码 目前就直接打印 console.log(‘async2’) 被阻塞后，要执行async之外的代码 执行new Promise()，Promise构造函数是直接调用的同步代码，所以 console.log( ‘promise1’ ) 代码运行到promise.then() 代码运行到promise.then()，发现这个是微任务，所以暂时不打印，只是推入当前宏任务的微任务队列中。 注意：这里只是把promise2推入微任务队列，并没有执行。微任务会在当前宏任务的同步代码执行完毕，才会依次执行 打印同步代码 console.log(‘script end’) 没什么好说的。执行完这个同步代码后，「async外的代码」终于走了一遍 下面该回到 await 表达式那里，执行await Promise.resolve(undefined)了 回到async内部，执行await Promise.resolve(undefined) 这部分可能不太好理解，我尽量表达我的想法。 对于 await Promise.resolve(undefined) 如何理解呢？ 根据 MDN 原话我们知道 如果一个 Promise 被传递给一个 await 操作符，await 将等待 Promise 正常处理完成并返回其处理结果。 在我们这个例子中，就是Promise.resolve(undefined)正常处理完成，并返回其处理结果。那么await async2()就算是执行结束了。 目前这个promise的状态是fulfilled，等其处理结果返回就可以执行await下面的代码了。 那何时能拿到处理结果呢？ 回忆平时我们用promise，调用resolve后，何时能拿到处理结果？是不是需要在then的第一个参数里，才能拿到结果。 （调用resolve时，会把then的参数推入微任务队列，等主线程空闲时，再调用它） 所以这里的 await Promise.resolve() 就类似于 把then的第一个回调参数 (undefined) =&gt; {} 推入微任务队列。 then执行完，才是await async2()执行结束。 await async2()执行结束，才能继续执行后面的代码 如图 此时当前宏任务1都执行完了，要处理微任务队列里的代码。 微任务队列，先进选出的原则 执行微任务1，打印promise2 执行微任务2，没什么内容.. 但是微任务2执行后，await async2()语句结束，后面的代码不再被阻塞，所以打印 console.log(‘async1 end’) 宏任务1执行完成后,执行宏任务2 宏任务2的执行比较简单，就是打印 console.log(‘setTimeout’) 至此完结 补充： 1234567891011121314151617181920212223242526272829&#123;async function async1() &#123; console.log("async start") await async2() console.log("async end")&#125;function async2() &#123; // 变成同步函数，区别于例子 console.log("async2")&#125;console.log("start")async1()setTimeout(function() &#123; console.log("setTimeout start")&#125;, 0)new Promise(function(resolve) &#123; console.log("promise1") resolve();&#125;).then(() =&gt; &#123; console.log("promise2")&#125;)console.log("script end")&#125; 结果 12345678startasync startasync2promise1script endasync endpromise2setTimeout start]]></content>
+      <categories>
+        <category>JAVASCRIPT</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[webpack4配置]]></title>
+    <url>%2F2018%2F12%2F10%2Fwebpack4%E9%85%8D%E7%BD%AE%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>webpack</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[H5 Canvas]]></title>
+    <url>%2F2018%2F12%2F10%2FcanvasFn%2F</url>
+    <content type="text"><![CDATA[Vue基于Canvas生成二维码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354&lt;div id=&quot;canvas&quot; width=&quot;137&quot; height=&quot;47&quot;&gt;&lt;/div&gt;function randomNum(min,max)&#123; return Math.floor(Math.random()*(max-min)+min);&#125;function randomColor(min,max)&#123; var _r = randomNum(min,max); var _g = randomNum(min,max); var _b = randomNum(min,max); return &quot;rgb(&quot;+_r+&quot;,&quot;+_g+&quot;,&quot;+_b+&quot;)&quot;;&#125;drawValCode() &#123; var $canvas = document.getElementById(&quot;canvas&quot;); var _str = &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&quot;; var _picTxt = &quot;&quot;; var _num = 6; var _width = $canvas.width; var _height = $canvas.height; var ctx = $canvas.getContext(&quot;2d&quot;); ctx.textBaseline = &quot;bottom&quot;; ctx.fillStyle = randomColor(180,240); ctx.fillRect(0,0,_width,_height); for(var i=0; i&lt;_num; i++)&#123; var x = (_width-10)/_num*i+10; var y = randomNum(_height/2,_height); var deg = randomNum(-45,45); var txt = _str[randomNum(0,_str.length)]; _picTxt += txt; ctx.fillStyle = randomColor(10,100); ctx.font = randomNum(16,40)+&quot;px SimHei&quot;; ctx.translate(x,y); ctx.rotate(deg*Math.PI/180); ctx.fillText(txt, 0,0); ctx.rotate(-deg*Math.PI/180); ctx.translate(-x,-y); &#125; for(var i=0; i&lt;_num; i++)&#123; ctx.strokeStyle = randomColor(90,180); ctx.beginPath(); ctx.moveTo(randomNum(0,_width), randomNum(0,_height)); ctx.lineTo(randomNum(0,_width), randomNum(0,_height)); ctx.stroke(); &#125; for(var i=0; i&lt;_num*10; i++)&#123; ctx.fillStyle = randomColor(0,255); ctx.beginPath(); ctx.arc(randomNum(0,_width),randomNum(0,_height), 1, 0, 2*Math.PI); ctx.fill(); &#125; return _picTxt;&#125;,]]></content>
+      <categories>
+        <category>Canvas</category>
+      </categories>
+      <tags>
+        <tag>canvas</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Git工作流]]></title>
+    <url>%2F2018%2F12%2F07%2Fgitflow%2F</url>
+    <content type="text"><![CDATA[介绍Gitflow工作流定义了一个围绕项目发布的严格分支模型。虽然比功能分支工作流复杂几分，但提供了用于一个健壮的用于管理大型项目的框架。 Gitflow工作流没有用超出功能分支工作流的概念和命令，而是为不同的分支分配一个很明确的角色，并定义分支之间如何和什么时候进行交互。除了使用功能分支，在做准备、维护和记录发布也使用各自的分支。当然你可以用上功能分支工作流所有的好处：Pull Requests、隔离实验性开发和更高效的协作。 工作方式Gitflow工作流仍然用中央仓库作为所有开发者的交互中心。和其它的工作流一样，开发者在本地工作并push分支到要中央仓库中。 历史分支 master develop相对使用仅有的一个master分支，Gitflow工作流使用2个分支来记录项目的历史。master分支存储了正式发布的历史，而develop分支作为功能的集成分支。这样也方便master分支上的所有提交分配一个版本号。 剩下要说明的问题围绕着这2个分支的区别展开。 功能分支 feature-*每个新功能位于一个自己的分支，这样可以push到中央仓库以备份和协作。但功能分支不是从master分支上拉出新分支，而是使用develop分支作为父分支。当新功能完成时，合并回develop分支。新功能提交应该从不直接与master分支交互。 注意，从各种含义和目的上来看，功能分支加上develop分支就是功能分支工作流的用法。但Gitflow工作流没有在这里止步。 发布分支 release-* 一旦develop分支上有了做一次发布（或者说快到了既定的发布日）的足够功能，就从develop分支上fork一个发布分支。新建的分支用于开始发布循环，所以从这个时间点开始之后新的功能不能再加到这个分支上 —— 这个分支只应该做Bug修复、文档生成和其它面向发布任务。一旦对外发布的工作都完成了，发布分支合并到master分支并分配一个版本号打好Tag。另外，这些从新建发布分支以来的做的修改要合并回develop分支。 使用一个用于发布准备的专门分支，使得一个团队可以在完善当前的发布版本的同时，另一个团队可以继续开发下个版本的功能。这也打造定义良好的开发阶段（比如，可以很轻松地说，『这周我们要做准备发布版本4.0』，并且在仓库的目录结构中可以实际看到）。 常用的分支约定： 用于新建发布分支的分支: develop用于合并的分支: master分支命名: release- 或 release/ 维护分支 hotfix-* 维护分支或说是热修复（hotfix）分支用于生成快速给产品发布版本（production releases）打补丁，这是唯一可以直接从master分支fork出来的分支。修复完成，修改应该马上合并回master分支和develop分支（当前的发布分支），master分支应该用新的版本号打好Tag。 为Bug修复使用专门分支，让团队可以处理掉问题而不用打断其它工作或是等待下一个发布循环。你可以把维护分支想成是一个直接在master分支上处理的临时发布。 示例下面的示例演示本工作流如何用于管理单个发布循环。假设你已经创建了一个中央仓库。 ##创建开发分支 第一步为master分支配套一个develop分支。简单来做可以本地创建一个空的develop分支，push到服务器上： 12git branch developgit push -u origin develop 以后这个分支将会包含了项目的全部历史，而master分支将只包含了部分历史。其它开发者这时应该克隆中央仓库，建好develop分支的跟踪分支： 12git clone ssh://user@host/path/to/repo.gitgit checkout -b develop origin/develop 现在每个开发都有了这些历史分支的本地拷贝。 小红和小明开始开发新功能 这个示例中，小红和小明开始各自的功能开发。他们需要为各自的功能创建相应的分支。新分支不是基于master分支，而是应该基于develop分支： 1git checkout -b some-feature develop 他们用老套路添加提交到各自功能分支上：编辑、暂存、提交：git statusgit addgit commit 小红完成功能开发 添加了提交后，小红觉得她的功能OK了。如果团队使用Pull Requests，这时候可以发起一个用于合并到develop分支。否则她可以直接合并到她本地的develop分支后push到中央仓库： 12345git pull origin developgit checkout developgit merge some-featuregit pushgit branch -d some-feature 第一条命令在合并功能前确保develop分支是最新的。注意，功能决不应该直接合并到master分支。冲突解决方法和集中式工作流一样。 小红开始准备发布 这个时候小明正在实现他的功能，小红开始准备她的第一个项目正式发布。像功能开发一样，她用一个新的分支来做发布准备。这一步也确定了发布的版本号： 1git checkout -b release-0.1 develop 这个分支是清理发布、执行所有测试、修改测试bug、更新文档和其它为下个发布做准备操作的地方，像是一个专门用于改善发布的功能分支。 只要小红创建这个分支并push到中央仓库，这个发布就是功能冻结的。任何不在develop分支中的新功能都推到下个发布循环中。 小红完成发布 一旦准备好了对外发布，小红合并合并到master分支和develop分支上，删除发布分支。合并回develop分支很重要，因为在发布分支中已经提交的更新需要在后面的新功能中也要是可用的。另外，如果小红的团队要求Code Review，这是一个发起Pull Request的理想时机。 1234567git checkout mastergit merge release-0.1git pushgit checkout developgit merge release-0.1git pushgit branch -d release-0.1 发布分支是作为功能开发（develop分支）和对外发布（master分支）间的缓冲。只要有合并到master分支，就应该打好Tag以方便跟踪。 12git tag -a 0.1 -m "Initial public release" mastergit push --tags Git有提供各种勾子（hook），即仓库有事件发生时触发执行的脚本。可以配置一个勾子，在你push中央仓库的master分支时，自动构建好对外发布。 最终用户发现Bug 对外发布后，小红回去和小明一起做下个发布的新功能开发，直到有最终用户开了一个Ticket抱怨当前版本的一个Bug。为了处理Bug，小红（或小明）从master分支上拉出了一个维护分支，提交修改以解决问题，然后直接合并回master分支： 1git checkout -b issue-#001 master Fix the bug123git checkout mastergit merge issue-#001git push 就像发布分支，维护分支中新加这些重要修改需要包含到develop分支中，所以小红要执行一个合并操作。然后就可以安全地删除这个分支了： git checkout developgit merge issue-#001git pushgit branch -d issue-#001]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Git教程]]></title>
+    <url>%2F2018%2F12%2F06%2Fgit-md%2F</url>
+    <content type="text"><![CDATA[安装window下安装过后,要进行全局配置,注意git config命令的–global参数，用了这个参数，表示你这台机器上所有的Git仓库都会使用这个配置，当然也可以对某个仓库指定不同的用户名和Email地址。 12$ git config --global user.name "Your Name"$ git config --global user.email "email@example.com" 在进入到log界面下，退出只需要在英文状态下，按下Q键即可在vim的编辑状态下，编辑完事之后，通过输入 ：wq 即可退出编辑保存 创建版本库 repository什么是版本库呢？版本库又名仓库，英文名repository，你可以简单理解成一个目录，这个目录里面的所有文件都可以被Git管理起来，每个文件的修改、删除，Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以“还原”。 12$ git initInitialized empty Git repository in /Users/michael/learngit/.git/ 瞬间Git就把仓库建好了，而且告诉你是一个空的仓库（empty Git repository），细心的读者可以发现当前目录下多了一个.git的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。 如果你没有看到.git目录，那是因为这个目录默认是隐藏的，用ls -ah命令就可以看见。 添加文件, 查看状态 git add file.txt | file1.txt file2.txt | . 123$ git add file1.txt$ git add file2.txt file3.txt$ git commit -m "add 3 files." 123456789$ git statusOn branch masterChanges not staged for commit: (use "git add &lt;file&gt;..." to update what will be committed) (use "git checkout -- &lt;file&gt;..." to discard changes in working directory) modified: readme.txtno changes added to commit (use "git add" and/or "git commit -a") git status命令可以让我们时刻掌握仓库当前的状态，上面的命令输出告诉我们，readme.txt被修改过了，但还没有准备提交的修改。 123456789$ git diff readme.txt diff --git a/readme.txt b/readme.txtindex 46d49bf..9247db6 100644--- a/readme.txt+++ b/readme.txt@@ -1,2 +1,2 @@-Git is a version control system.+Git is a distributed version control system. Git is free software. git diff顾名思义就是查看difference，显示的格式正是Unix通用的diff格式 版本回退1$ git reset --hard HEAD^ | HEAD~100 HEAD指向的版本就是当前版本，因此，Git允许我们在版本的历史之间穿梭，使用命令git reset –hard commit_id。 穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。 要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。 工作区 暂存区工作区（Working Directory）就是你在电脑里能看到的目录 管理修改每次修改，如果不用git add到暂存区，那就不会加入到commit中。 commit统一提交 撤销修改 场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout – file。场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD ，就回到了场景1，第二步按场景1操作。场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。 删除操作一种情况是确定删除 12$ git add fileName $ git commit -m "entry" 一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本： 1$ git checkout -- pathFile/fileName 远程仓库本地Git仓库和GitHub仓库之间的传输是通过SSH加密的，所以需要一点设置。 第1步：创建SSH Key。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有id_rsa和id_rsa.pub这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开Shell（Windows下打开Git Bash），创建SSH Key： 1$ ssh-keygen -t rsa -C "youremail@example.com" 你需要把邮件地址换成你自己的邮件地址，然后一路回车，使用默认值即可，由于这个Key也不是用于军事目的，所以也无需设置密码如果一切顺利的话，可以在用户主目录里找到.ssh目录，里面有id_rsa和id_rsa.pub两个文件，这两个就是SSH Key的秘钥对，id_rsa是私钥，不能泄露出去，id_rsa.pub是公钥，可以放心地告诉任何人。 第2步：登陆GitHub，打开“Account settings”，“SSH Keys”页面：然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴id_rsa.pub文件的内容： 第3步，登陆GitHub，然后，在右上角找到“Create a new repo”按钮，创建一个新的仓库。 第4步， 1$ git remote add origin git@github.com:TimeMagic/xxx.git 远程库的名字就是origin，这是Git默认的叫法，也可以改成别的，但是origin这个名字一看就知道是远程库。 第4步，推送内容到远程仓库 1$ git push -u origin master 把当前分支master推送到远程。由于远程库是空的，我们第一次推送master分支时，加上了-u参数，Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令。 从现在起，只要本地作了提交，就可以通过命令： 1$ git push origin master 把本地master分支的最新修改推送至GitHub，现在，你就拥有了真正的分布式版本库！ 克隆远程仓库远程库已经准备好了，下一步是用命令git clone克隆一个本地库 12345$ git clone git@github.com:michaelliao/gitskills.gitCloning into 'gitskills'...remote: Counting objects: 3, done.remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 3Receiving objects: 100% (3/3), done. Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快。 分支管理master分支。HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以，HEAD指向的就是当前分支。 一开始的时候，master分支是一条线，Git用master指向最新的提交，再用HEAD指向master，就能确定当前分支，以及当前分支的提交点： 原理： 内容待定 首先，我们创建dev分支，然后切换到dev分支： 12$ git branch -b devSwitched to a new branch 'dev' 用git branch命令查看当前分支： 123$ git branch* dev master 分支切换 12$ git checkout masterSwitched to branch 'master' 合并分支 12345$ git merge devUpdating d46f35e..b17d20eFast-forward readme.txt | 1 + 1 file changed, 1 insertion(+) 合并完成后，就可以放心地删除dev分支了： 12$ git branch -d devDeleted branch dev (was b17d20e). 解决冲突1234$ git checkout masterSwitched to branch 'master'Your branch is ahead of 'origin/master' by 1 commit. (use "git push" to publish your local commits) Git还会自动提示我们当前master分支比远程的master分支要超前1个提交。 当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。 解决冲突就是把Git合并失败的文件手动编辑为我们希望的内容，再提交。 用git log –graph命令可以看到分支合并图。 分支管理策略通常，合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。 如果要强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息。 bug修复（hotfix）一种情况，在dev分支开发的时候，突然有紧急bug要修复，手头工作还没有完成。而且要切换到其他分支，这个时候怎么办。可以通过下面命令 1$ git stash 把暂时修改的没有保存的文件缓存起来，此时工作区变成最近的版本内容。这个时候就可以切换了。修复完bug回来，dev暂时是不显示之前没有完成的工作内容的. 刚才的工作现场存到哪去了？用git stash list命令看看： 12$ git stash liststash@&#123;0&#125;: WIP on dev: f52c633 add merge 一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除； 另一种方式是用git stash pop，恢复的同时把stash内容也删了： 1$ git stash apply stash@&#123;0&#125; 修复bug时，我们会通过创建新的bug分支进行修复，然后合并，最后删除； 当手头工作没有完成时，先把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场。 多人协作当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。 要查看远程库的信息，用git remote： 12$ git remoteorigin 用git remote -v显示更详细的信息： 123$ git remote -vorigin git@github.com:TimeMagic/TimeMagic.git (fetch)origin git@github.com:TimeMagic/TimeMagic.git (push) 推送分支推送分支，就是把该分支上的所有本地提交推送到远程库。推送时，要指定本地分支，这样，Git就会把该分支推送到远程库对应的远程分支上： 1$ git push origin master 如果要推送其他分支，比如dev，就改成： 1$ git push origin dev 但是，并不是一定要把本地分支往远程推送，那么，哪些分支需要推送，哪些不需要呢？ master分支是主分支，因此要时刻与远程同步； dev分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步； bug分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug； feature分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。 总之，就是在Git中，分支完全可以在本地自己藏着玩，是否推送，视你的心情而定！ 抓取分支多人协作时，大家都会往master和dev分支上推送各自的修改。现在，模拟一个你的小伙伴，可以在另一台电脑（注意要把SSH Key添加到GitHub）或者同一台电脑的另一个目录下克隆： 当你的小伙伴从远程库clone时，默认情况下，你的小伙伴只能看到本地的master分支。不信可以用git branch命令看看： 12$ git branch* master 现在，你的小伙伴要在dev分支上开发，就必须创建远程origin的dev分支到本地，于是他用这个命令创建本地dev分支： 1$ git checkout -b dev origin/dev 现在，他就可以在dev上继续修改，然后，时不时地把dev分支push到远程,你的小伙伴已经向origin/dev分支推送了他的提交，而碰巧你也对同样的文件作了修改，并试图推送。 123456789101112131415161718$ cat env.txtenv$ git add env.txt$ git commit -m "add new env"[dev 7bd91f1] add new env 1 file changed, 1 insertion(+) create mode 100644 env.txt$ git push origin devTo github.com:michaelliao/learngit.git ! [rejected] dev -&gt; dev (non-fast-forward)error: failed to push some refs to 'git@github.com:michaelliao/learngit.git'hint: Updates were rejected because the tip of your current branch is behindhint: its remote counterpart. Integrate the remote changes (e.g.hint: 'git pull ...') before pushing again.hint: See the 'Note about fast-forwards' in 'git push --help' for details. 推送失败，因为你的小伙伴的最新提交和你试图推送的提交有冲突，解决办法也很简单，Git已经提示我们，先用git pull把最新的提交从origin/dev抓下来，然后，在本地合并，解决冲突，再推送： 12345678910$ git pullThere is no tracking information for the current branch.Please specify which branch you want to merge with.See git-pull(1) for details. git pull &lt;remote&gt; &lt;branch&gt;If you wish to set tracking information for this branch you can do so with: git branch --set-upstream-to=origin/&lt;branch&gt; dev git pull也失败了，原因是没有指定本地dev分支与远程origin/dev分支的链接，根据提示，设置dev和origin/dev的链接： 12$ git branch --set-upstream-to=origin/dev devBranch 'dev' set up to track remote branch 'dev' from 'origin'. 再pull： 1234$ git pullAuto-merging env.txtCONFLICT (add/add): Merge conflict in env.txtAutomatic merge failed; fix conflicts and then commit the result. 这回git pull成功，但是合并有冲突，需要手动解决，解决的方法和分支管理中的解决冲突完全一样。解决后，提交，再push： 1234567891011$ git commit -m "fix env conflict"[dev 57c53ab] fix env conflict$ git push origin devCounting objects: 6, done.Delta compression using up to 4 threads.Compressing objects: 100% (4/4), done.Writing objects: 100% (6/6), 621 bytes | 621.00 KiB/s, done.Total 6 (delta 0), reused 0 (delta 0)To github.com:michaelliao/learngit.git 7a5e5dd..57c53ab dev -&gt; dev 因此，多人协作的工作模式通常是这样： 首先，可以试图用git push origin 推送自己的修改； 如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并； 如果合并有冲突，则解决冲突，并在本地提交； 没有冲突或者解决掉冲突后，再用git push origin 推送就能成功！ 如果git pull提示no tracking information，则说明本地分支和远程分支的链接关系没有创建，用命令git branch –set-upstream-to origin/。 这就是多人协作的工作模式，一旦熟悉了，就非常简单。 查看远程库信息，使用git remote -v； 本地新建的分支如果不推送到远程，对其他人就是不可见的； 从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交； 在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致； 建立本地分支和远程分支的关联，使用git branch –set-upstream branch-name origin/是branch-name； 从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。 注意，origin 是远程分支的名称，是可以随意起的。 Rabase标签管理发布一个版本时，我们通常先在版本库中打一个标签（tag），这样，就唯一确定了打标签时刻的版本。将来无论什么时候，取某个标签的版本，就是把那个打标签的时刻的历史版本取出来。所以，标签也是版本库的一个快照。 Git的标签虽然是版本库的快照，但其实它就是指向某个commit的指针（跟分支很像对不对？但是分支可以移动，标签不能移动），所以，创建和删除标签都是瞬间完成的。 Git有commit，为什么还要引入tag？ “请把上周一的那个版本打包发布，commit号是6a5819e…” “一串乱七八糟的数字不好找！” 如果换一个办法： “请把上周一的那个版本打包发布，版本号是v1.2” “好的，按照tag v1.2查找commit就行！” 所以，tag就是一个让人容易记住的有意义的名字，它跟某个commit绑在一起。 创建标签在Git中打标签非常简单，首先，切换到需要打标签的分支上：然后，敲命令git tag 就可以打一个新标签： 1$ git tag v1.0 默认标签是打在最新提交的commit上的。有时候，如果忘了打标签，比如，现在已经是周五了，但应该在周一打的标签没有打，怎么办？ 方法是找到历史提交的commit id，然后打上就可以了： 1$ git tag v1.1 f23fedc 注意，标签不是按时间顺序列出，而是按字母排序的。可以用git show 查看标签信息： 12345678910111213141516171819202122232425262728$ git show v0.9commit f52c63349bc3c1593499807e5c8e972b82c8f286 (tag: v0.9)Author: Michael Liao &lt;askxuefeng@gmail.com&gt;Date: Fri May 18 21:56:54 2018 +0800 add mergediff --git a/readme.txt b/readme.txt ``` 还可以创建带有说明的标签，用-a指定标签名，-m指定说明文字：``` bash$ git tag -a v0.1 -m "version 0.1 released" 1094adb$ git show v0.1tag v0.1Tagger: Michael Liao &lt;askxuefeng@gmail.com&gt;Date: Fri May 18 22:48:43 2018 +0800version 0.1 releasedcommit 1094adb7b9b3807259d8cb349e7df1d4d6477073 (tag: v0.1)Author: Michael Liao &lt;askxuefeng@gmail.com&gt;Date: Fri May 18 21:06:15 2018 +0800 append GPLdiff --git a/readme.txt b/readme.txt 注意：标签总是和某个commit挂钩。如果这个commit既出现在master分支，又出现在dev分支，那么在这两个分支上都可以看到这个标签。 命令git tag 用于新建一个标签，默认为HEAD，也可以指定一个commit id； 命令git tag -a -m “blablabla…”可以指定标签信息； 命令git tag可以查看所有标签。 操作标签如果标签打错了，也可以删除因为创建的标签都只存储在本地，不会自动推送到远程。所以，打错的标签可以在本地安全删除。 如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：然后，从远程删除。删除命令也是push，但是格式如下： 命令git push origin 可以推送一个本地标签； 命令git push origin –tags可以推送全部未推送过的本地标签； 命令git tag -d 可以删除一个本地标签； 命令git push origin :refs/tags/可以删除一个远程标签。 小科技git配置别名有没有经常敲错命令？比如git status？status这个单词真心不好记。 如果敲git st就表示git status那就简单多了，当然这种偷懒的办法我们是极力赞成的。 我们只需要敲一行命令，告诉Git，以后st就表示status： 1$ git config --global alias.st status 1$ git st // 相当于 git status 1$ git config --global alias.unstage 'reset HEAD' 1$ git unstage test.py // 相当于 $ git reset HEAD test.py 配置文件 配置Git的时候，加上–global是针对当前用户起作用的，如果不加，那只针对当前的仓库起作用。 配置文件放哪了？每个仓库的Git配置文件都放在.git/config文件中： 别名就在[alias]后面，要删除别名，直接把对应的行删掉即可。 而当前用户的Git配置文件放在用户主目录下的一个隐藏文件.gitconfig中： 忽略文件忽略某些文件时，需要编写.gitignore； .gitignore文件本身要放到版本库里，并且可以对.gitignore做版本管理！]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[IDE与调试工具]]></title>
+    <url>%2F2018%2F12%2F05%2FIDE%E4%B8%8E%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>IDE与调试工具</category>
+      </categories>
+      <tags>
+        <tag>sublime</tag>
+        <tag>vsCode</tag>
+        <tag>Fiddler</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[NodeJS]]></title>
+    <url>%2F2018%2F12%2F05%2FNodeJS%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>NodeJS</category>
+      </categories>
+      <tags>
+        <tag>koa</tag>
+        <tag>express</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[框架类库]]></title>
+    <url>%2F2018%2F12%2F05%2F%E6%A1%86%E6%9E%B6%E7%B1%BB%E5%BA%93%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>框架类库</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+        <tag>react</tag>
+        <tag>angular</tag>
+        <tag>jquery</tag>
+        <tag>bootstrap</tag>
+        <tag>react Native</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[图形动效]]></title>
+    <url>%2F2018%2F12%2F05%2F%E5%9B%BE%E5%BD%A2%E5%8A%A8%E6%95%88%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>图形动效</category>
+      </categories>
+      <tags>
+        <tag>echart</tag>
+        <tag>d3</tag>
+        <tag>threejs</tag>
+        <tag>hightChart</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[JS前生今世.md]]></title>
+    <url>%2F2018%2F12%2F05%2FJS%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96-md%2F</url>
+    <content type="text"></content>
+      <categories>
+        <category>JAVASCRIPT</category>
+      </categories>
+      <tags>
+        <tag>javascript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CSS总结]]></title>
+    <url>%2F2018%2F12%2F05%2FCSS%E6%80%BB%E7%BB%93-md%2F</url>
+    <content type="text"><![CDATA[CSS规范123div &#123; box-sizing: border-box |&#125;]]></content>
+      <categories>
+        <category>HTML CSS</category>
+      </categories>
+      <tags>
+        <tag>html</tag>
+        <tag>css</tag>
+        <tag>sass</tag>
+        <tag>less</tag>
+        <tag>stylus</tag>
+        <tag>总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hexo搭建个人博客--Next主题优化]]></title>
+    <url>%2F2018%2F12%2F05%2FHexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-Next%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%2F</url>
+    <content type="text"><![CDATA[站点配置文件基本使用文件路径站点根目录/_config.yml，编辑软件推荐使用Sublime Text 。 123456# Sitetitle: XXX博客subtitle: Stay Hungry, Stay Foolishauthor: YMQdescription: &quot;YMQ个人站，主要涉及前端知识共享、实践教程、前沿技术共同学习等方面&quot; #网站描述 SEOlanguage: zh-Hans “title”: 博客的名称。“subtitle”: 根据主题的不同，有的会显示有的不会显示。“description”: 主要用于SEO，告诉搜索引擎一个关于站点的简单描述，通常建议在其中包含网站的关键词。“author”: 作者名称，用于主题显示文章的作者。“language”: 语言会对应的解析正在应用的主题中的languages文件夹下的不同语言文件。所以这里的名称要和languages文件夹下的语言文件名称一致。“timezone”: 可不填写。 主题配置文件More info: Next Setting]]></content>
+      <categories>
+        <category>博客平台</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[基于Hexo创建自己的github.io博客]]></title>
+    <url>%2F2018%2F12%2F04%2F%E5%9F%BA%E4%BA%8EHexo%E5%88%9B%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2%2F</url>
+    <content type="text"><![CDATA[快速搭建如果你是有一定开发经验的前端,你的电脑一定已经安装了 git 和 node ,那你在搭建博客之前你只要先全局安装 hexo 的命令行工具,命令如下 1$ npm install -g hexo-cli 然后你在你的电脑里新建一个空的文件夹命名就按照 userName.github.io 的方式来命名 例如我的项目我命名为 TimeMagic.github.io, 其次,你需要进入你新建的这个文件夹,执行命令 1$ hexo init 等待一定时间,你会看到你新建的文件夹里出现了好多初始化文件,现在这个时候一个基本的简单博客搭建成功了,你运行以下命令 node_modules：是依赖包 public：存放的是生成的页面 scaffolds：命令生成文章等的模板 source：用命令创建的各种文章 themes：主题 _config.yml：整个博客的配置 db.json：source解析所得到的 package.json：项目所需模块项目的配置信息 1$ hexo s -p 3000 就能在 localhost:3000 中看到一个博客网站了,现在你要做的就是为你的博客网站做一些个性化的定制,打开_config.yml 文件.修改文件内的参数, 123456title: 时间魔法师的博客 //博客网站的titlesubtitle: //子标题description: 前端,博客 //网站描述author: ymq //网站作者language: zh-Hans //网站语言,用于本地化... // 等其它配置 发布博客关联远程仓库博客搭建好之后,你需要做的是把博客发布到 github 上,首先你需要在 github 上新建一个仓库,命名和你新建的文件夹一样, username.githhub.io 值得注意的是,这里的 username 必须和你的github 用户名一样,大小写也要一样.然后你需要进入你的本地文件夹,关联你的远程仓库. 首先 1$ git init 然后 1$ git remote add origin git@github.com:username/username.github.io.git 然后我们只要把代码推到远程仓库就行了,不过这里我们要有个约定,我们在 master 上发布博客,在 dev 分支上修改我们的博客内容和项目配置,也就是说我们发布博客后,master 分支上就是我们的博客的静态文件,dev 分支上的代码就是我们自己维护的博客内容 安装 hexo 的一键部署命令工具通过npm安装 1$ npm install hexo-deployer-git --save 修改部署配置,在 _config.yml 中添加如下配置 1234deploy: type: git branch: master repo: git@github.com:TimeMagic/TimeMagic.github.io.git //此处记得改成你的 github 仓库的地址 按照约定我们先切分支,通过命令把项目切换到 dev 分支 1$ git checkout -b dev 然后 add 你的项目代码 1$ git add . 你的 first commit 1$ git commit -m ":tada: init blog" 然后 push 你的代码到远程 1$ git push --set-upstream origin dev 发布其实很简单的,我们之前也说是一个命令行发布的,所以你只要 1$ hexo deploy 然后你就可以看到一个属于你的 github.io 的网站了 改变你的博客网站主题个人比较推荐的是 next ,大量的留白,让你的博客看起来简洁大方,或则你喜欢其它的主题也行,你需要在你的博客文件夹里clone 下你需要的主题 1$ git clone https://github.com/iissnan/hexo-theme-next themes/next 然后在 _config.yml 文件夹里修改你的主题配置 1$ theme: next 然后 hexo s 就能看到你修改的主题生效了,为了防止 clone 下来的主题文件和自己的博客文件冲突,我删除了clone 下来的 .git 文件.你再按照你的 first commit 的操作提交你的修改就行了,然后别忘记了 deploy 123$ hexo clean$ hexo generate$ hexo deploy 新建一篇文章1$ hexo new [layout] &lt;title&gt; Hexo 有三种默认布局：post、page 和 draft，它们分别对应不同的路径，而您自定义的其他布局和 post 相同，都将储存到 source/_posts 文件夹。]]></content>
+      <categories>
+        <category>博客平台</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+</search>
